@@ -1,6 +1,11 @@
 import '../package.dart';
 
 class MultiSelectedWidgetItemDecoration extends StatelessWidget {
+  final bool? hideLines;
+  final Widget? child;
+  final EdgeInsetsGeometry? itemMargin;
+  final EdgeInsetsGeometry? itemPadding;
+
   const MultiSelectedWidgetItemDecoration({
     super.key,
     this.hideLines,
@@ -8,10 +13,7 @@ class MultiSelectedWidgetItemDecoration extends StatelessWidget {
     this.itemMargin,
     this.itemPadding,
   });
-  final bool? hideLines;
-  final Widget? child;
-  final EdgeInsetsGeometry? itemMargin;
-  final EdgeInsetsGeometry? itemPadding;
+
   @override
   Widget build(BuildContext context) {
     return Container(
