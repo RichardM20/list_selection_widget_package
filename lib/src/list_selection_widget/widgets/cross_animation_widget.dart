@@ -3,13 +3,12 @@ import '../package.dart';
 class CrossAnimationWidget extends StatefulWidget {
   final Widget child;
   final StreamController<bool> stream;
-  @override
-  final Key? key;
+
   const CrossAnimationWidget({
+    super.key,
     required this.child,
-    this.key,
     required this.stream,
-  }) : super(key: key);
+  });
 
   @override
   State<CrossAnimationWidget> createState() => _CrossAnimationWidgetState();
