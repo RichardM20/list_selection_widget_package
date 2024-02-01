@@ -1,5 +1,5 @@
-# dd_list_widget
-dd list widget is a Flutter package that provides a highly customizable dropdown list to select options with ease
+# list_selection_widget
+List selection widget is a Flutter package that provides a highly customizable dropdown list to select options with ease
 ## Preview
 ![Untitled video - Made with Clipchamp](https://github.com/RichardM20/list_selection_widget_package/assets/64317751/e50f4967-28de-46b5-af18-0d9254547c10)
 ![image](https://github.com/RichardM20/list_selection_widget_package/assets/64317751/125fb90b-0006-4d0e-8bfb-e596b62dfc63)
@@ -8,7 +8,7 @@ dd list widget is a Flutter package that provides a highly customizable dropdown
 ## Usage
 
 ```dart
-import 'package:dd_list_widget/src/list_selection_widget/package.dart';
+import 'package:list_selection_widget/src/list_selection_widget/package.dart';
 ```
 
 The package can be used to select multiple texts or just one, it depends on what you need at the moment.
@@ -16,7 +16,6 @@ The package can be used to select multiple texts or just one, it depends on what
 For example, let's say you need to select multiple texts from a list of data, to do this we will pass a true value to the **isMultiSelection** property
 
 ```dart
-import 'package:dd_list_widget/src/list_selection_widget/package.dart';
 
 ListSelectionWidget(
     isMultiSelection: true, //< -- This property defines whether it will be multiple or single selection
@@ -94,7 +93,7 @@ The widget is currently very customizable, it will have several options to give 
 
 ## Full Example
 ```dart
-import 'package:dd_list_widget/src/list_selection_widget/package.dart';
+import 'package:list_selection_widget/src/list_selection_widget/package.dart';
 
 void main() {
   runApp(MyApp());

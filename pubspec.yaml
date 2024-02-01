@@ -1,7 +1,7 @@
-name: dd_list_widget
-description: "dd list widget is a Flutter package that provides a highly customizable dropdown list to select options with ease"
+name: list_selection_widget
+description: "List selection widget is a Flutter package that provides a highly customizable dropdown list to select options with ease"
 version: 0.0.1
-homepage:
+homepage: https://github.com/RichardM20/list_selection_widget_package
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
