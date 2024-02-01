@@ -1,5 +1,9 @@
 # dd_list_widget
 dd list widget is a Flutter package that provides a highly customizable dropdown list to select options with ease
+## Preview
+![Untitled video - Made with Clipchamp](https://github.com/RichardM20/list_selection_widget_package/assets/64317751/e50f4967-28de-46b5-af18-0d9254547c10)
+
+
 ## Usage
 
 ```dart
