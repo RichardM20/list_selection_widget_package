@@ -1,17 +1,23 @@
 import '../package.dart';
 
 class ListSelectionWidgetTitleContent extends StatefulWidget {
+  final String selected;
+  final EdgeInsets? titleContentPadding;
+  final Widget? icon;
+  final Color? collapsedIconColor;
+  final Color? expandedIconColor;
+  final TextStyle? titleStyle;
+
   const ListSelectionWidgetTitleContent({
     super.key,
     required this.selected,
     this.titleContentPadding,
     this.icon,
     this.titleStyle,
+    this.collapsedIconColor,
+    this.expandedIconColor,
   });
-  final String selected;
-  final EdgeInsets? titleContentPadding;
-  final Widget? icon;
-  final TextStyle? titleStyle;
+
   @override
   State<ListSelectionWidgetTitleContent> createState() =>
       _ListSelectionWidgetTitleContentState();
@@ -22,8 +28,7 @@ class _ListSelectionWidgetTitleContentState
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-
-  final _globalState = GlobalState();
+  bool isExpanded = false;
   @override
   void initState() {
     super.initState();
@@ -33,14 +38,6 @@ class _ListSelectionWidgetTitleContentState
     );
 
     _animation = Tween<double>(begin: 0, end: 0.25).animate(_controller);
-    //escucha los cambios de el estream para la animacion del icono
-    _globalState.expansionStream.listen((event) {
-      if (_globalState.expandedState) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
-    });
   }
 
   @override
@@ -82,21 +79,25 @@ class _ListSelectionWidgetTitleContentState
       child: widget.icon ??
           Icon(
             Icons.arrow_forward_ios_rounded,
-            color: _globalState.expandedState ? Colors.blue : Colors.grey,
+            color: isExpanded
+                ? widget.expandedIconColor ?? Colors.blue
+                : widget.collapsedIconColor ?? Colors.grey,
           ),
     );
   }
 
   void onTap() {
-    if (_globalState.expandedState == true) {
+    if (isExpanded == true) {
       setState(() {
-        _globalState.setExpansionState(false);
+        _controller.reverse();
+        isExpanded = false;
+        Provider.of(context)!.toggleExpansion(false);
       });
-      _controller.reverse();
     } else {
-      _controller.forward();
       setState(() {
-        _globalState.setExpansionState(true);
+        _controller.forward();
+        isExpanded = true;
+        Provider.of(context)!.toggleExpansion(true);
       });
     }
   }

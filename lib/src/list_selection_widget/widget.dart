@@ -17,11 +17,17 @@ class ListSelectionWidget extends StatefulWidget {
   final Decoration? decoration;
   final TextStyle? titleStyle;
   final TextStyle? itemTextStyle;
+  final TextStyle? selectedItemTextStyle;
   final EdgeInsets? contentPadding;
   final EdgeInsets? titlePadding;
   final Widget? titleIcon;
   final bool? scrollControl;
   final double? maxHeight;
+  final Color? collapsedIconColor;
+  final Color? expandedIconColor;
+  final Color? selectedIconColor;
+  final Color? backgroundSelectedIconColor;
+  final Color? unSelecctedIconColor;
 
   const ListSelectionWidget({
     Key? key,
@@ -44,6 +50,12 @@ class ListSelectionWidget extends StatefulWidget {
     this.onSingleItemSelected,
     required this.isMultiSelection,
     this.selectedIcon,
+    this.collapsedIconColor,
+    this.expandedIconColor,
+    this.selectedIconColor,
+    this.backgroundSelectedIconColor,
+    this.unSelecctedIconColor,
+    this.selectedItemTextStyle,
   })  : assert(
           (isMultiSelection && onMultiItemsSelected != null) ||
               (!isMultiSelection && onSingleItemSelected != null),
@@ -63,7 +75,7 @@ class ListSelectionWidget extends StatefulWidget {
 class _ListSelectionWidgetState extends State<ListSelectionWidget> {
   late List<SelectionItem> multiSelectValues;
   late SelectionItem singleSelectValue;
-  final _globalState = GlobalState();
+  final streamController = StreamController<bool>.broadcast();
 
   @override
   void initState() {
@@ -76,44 +88,64 @@ class _ListSelectionWidgetState extends State<ListSelectionWidget> {
   }
 
   @override
+  void dispose() {
+    streamController.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ListSelectionWidgetDecoration(
-      decoration: widget.decoration,
-      paddingContent: widget.contentPadding,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListSelectionWidgetTitleContent(
-            selected: getTextTitle(),
-            titleContentPadding: widget.titlePadding,
-            titleStyle: widget.titleStyle,
-            icon: widget.titleIcon,
-          ),
-          CrossAnimationWidget(
-            child: SizedBox(
-              height: widget.scrollControl == true ? widget.maxHeight : null,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(widget.listItems.length, (index) {
-                    return ListSelectionWidgetItemContent(
-                      isMultiSelection: widget.isMultiSelection,
-                      selectedIcon: widget.selectedIcon,
-                      itemTextStyle: widget.itemTextStyle,
-                      hideLines: widget.hideLines,
-                      itemMargin: widget.itemMargin,
-                      itemPadding: widget.itemPadding,
-                      item: widget.listItems[index],
-                      selected: selectedPass(),
-                      onTap: () => onTap(widget.listItems[index]),
-                    );
-                  }),
+    return Provider(
+      toggleExpansion: (val) {
+        streamController.add(val);
+      },
+      child: ListSelectionWidgetDecoration(
+        decoration: widget.decoration,
+        paddingContent: widget.contentPadding,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListSelectionWidgetTitleContent(
+              collapsedIconColor: widget.collapsedIconColor,
+              expandedIconColor: widget.expandedIconColor,
+              selected: getTextTitle(),
+              titleContentPadding: widget.titlePadding,
+              titleStyle: widget.titleStyle,
+              icon: widget.titleIcon,
+            ),
+            CrossAnimationWidget(
+              stream: streamController,
+              child: SizedBox(
+                height: widget.scrollControl == true ? widget.maxHeight : null,
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(widget.listItems.length, (index) {
+                      return ListSelectionWidgetItemContent(
+                        selectedItemTextStyle: widget.selectedItemTextStyle,
+                        backgroundSelectedIconColor:
+                            widget.backgroundSelectedIconColor,
+                        selectedIconColor: widget.selectedIconColor,
+                        unSelecctedIconColor: widget.unSelecctedIconColor,
+                        isMultiSelection: widget.isMultiSelection,
+                        selectedIcon: widget.selectedIcon,
+                        itemTextStyle: widget.itemTextStyle,
+                        hideLines: widget.hideLines,
+                        itemMargin: widget.itemMargin,
+                        itemPadding: widget.itemPadding,
+                        item: widget.listItems[index],
+                        selected: selectedPass(),
+                        onTap: () => onTap(widget.listItems[index]),
+                      );
+                    }),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -178,7 +210,6 @@ class _ListSelectionWidgetState extends State<ListSelectionWidget> {
       );
     } else {
       singleSelectValue = item;
-      _globalState.setExpansionState(false);
       widget.onSingleItemSelected!(
         item.value,
       );

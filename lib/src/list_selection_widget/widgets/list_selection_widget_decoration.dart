@@ -2,16 +2,17 @@ import '../package.dart';
 
 // ignore: must_be_immutable
 class ListSelectionWidgetDecoration extends StatelessWidget {
+  final Widget child;
+  final EdgeInsets? paddingContent;
+  final Decoration? decoration;
+
   const ListSelectionWidgetDecoration({
     super.key,
     required this.child,
     this.paddingContent,
     this.decoration,
   });
-  final Widget child;
 
-  final EdgeInsets? paddingContent;
-  final Decoration? decoration;
   @override
   Widget build(BuildContext context) {
     EdgeInsets defaultPadding = const EdgeInsets.symmetric(

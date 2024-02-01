@@ -1,26 +1,25 @@
 import '../package.dart';
 
 class CrossAnimationWidget extends StatefulWidget {
+  final Widget child;
+  final StreamController<bool> stream;
   @override
   final Key? key;
   const CrossAnimationWidget({
     required this.child,
     this.key,
+    required this.stream,
   }) : super(key: key);
-
-  final Widget child;
 
   @override
   State<CrossAnimationWidget> createState() => _CrossAnimationWidgetState();
 }
 
 class _CrossAnimationWidgetState extends State<CrossAnimationWidget> {
-  final _globalState = GlobalState();
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<bool>(
-      stream: _globalState.expansionStream,
+      stream: widget.stream.stream,
       builder: (context, snapshot) {
         return AnimatedCrossFade(
           duration: const Duration(milliseconds: 250),
