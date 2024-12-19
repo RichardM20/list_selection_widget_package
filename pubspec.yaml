@@ -1,6 +1,6 @@
 name: list_selection_widget
 description: "List selection widget is a Flutter package that provides a highly customizable dropdown list to select options with ease"
-version: 0.0.2
+version: 1.0.0
 homepage: https://github.com/RichardM20
 repository: https://github.com/RichardM20/list_selection_widget_package
  

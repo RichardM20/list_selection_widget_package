@@ -1,4 +1,5 @@
 import '../package.dart';
+import 'list_selection_widget_items_decoration.dart';
 
 class ListSelectionWidgetItemContent<T> extends StatelessWidget {
   final bool? hideLines;
