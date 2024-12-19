@@ -1,80 +1,153 @@
 import 'package.dart';
 
-class ListSelectionWidget extends StatefulWidget {
-  final String hintText;
-  final List<SelectionItem> listItems;
-  final bool isMultiSelection;
-  //multi
-  final List<dynamic>? multiSelectValues;
-  final Function(List<dynamic>)? onMultiItemsSelected;
-  //single
-  final dynamic selectedValue;
-  final Function(dynamic)? onSingleItemSelected;
-  final Widget? selectedIcon;
-  final bool? hideLines;
-  final EdgeInsetsGeometry? itemMargin;
-  final EdgeInsetsGeometry? itemPadding;
-  final Decoration? decoration;
-  final TextStyle? titleStyle;
-  final TextStyle? itemTextStyle;
-  final TextStyle? selectedItemTextStyle;
-  final EdgeInsets? contentPadding;
-  final EdgeInsets? titlePadding;
-  final Widget? titleIcon;
-  final bool? scrollControl;
-  final double? maxHeight;
-  final Color? collapsedIconColor;
-  final Color? expandedIconColor;
-  final Color? selectedIconColor;
-  final Color? backgroundSelectedIconColor;
-  final Color? unSelecctedIconColor;
+class ListSelectionWidget<T> extends ListSelectionWidgetBase<T> {
+  factory ListSelectionWidget.single({
+    Key? key,
+    required String hintText,
+    required List<SelectionItem<T>> listItems,
+    required SelectionItem<T>? selectedValue,
+    required Function(SelectionItem<T>) onSingleItemSelected,
+    Widget? selectedIcon,
+    bool? hideLines,
+    Decoration? decoration,
+    IconStyleData? iconStyle,
+    TextStyleData? textStyle,
+    PaddingData? paddingData,
+    bool? scrollControl,
+    double? maxHeight,
+  }) {
+    return ListSelectionWidget<T>(
+      key: key,
+      hintText: hintText,
+      listItems: listItems,
+      selectedValue: selectedValue,
+      onSingleItemSelected: onSingleItemSelected,
+      selectedIcon: selectedIcon,
+      hideLines: hideLines,
+      decoration: decoration,
+      iconStyle: iconStyle,
+      textStyle: textStyle,
+      paddingData: paddingData,
+      scrollControl: scrollControl,
+      maxHeight: maxHeight,
+      isMultiSelection: false,
+    );
+  }
+
+  factory ListSelectionWidget.multi({
+    Key? key,
+    required String hintText,
+    required List<SelectionItem<T>> listItems,
+    required List<SelectionItem<T>> multiSelectValues,
+    required Function(List<SelectionItem<T>>) onMultiItemsSelected,
+    Widget? selectedIcon,
+    bool? hideLines,
+    Decoration? decoration,
+    IconStyleData? iconStyle,
+    TextStyleData? textStyle,
+    PaddingData? paddingData,
+    bool? scrollControl,
+    double? maxHeight,
+  }) {
+    return ListSelectionWidget<T>(
+      key: key,
+      hintText: hintText,
+      listItems: listItems,
+      multiSelectValues: multiSelectValues,
+      onMultiItemsSelected: onMultiItemsSelected,
+      selectedIcon: selectedIcon,
+      hideLines: hideLines,
+      decoration: decoration,
+      iconStyle: iconStyle,
+      textStyle: textStyle,
+      paddingData: paddingData,
+      scrollControl: scrollControl,
+      maxHeight: maxHeight,
+      isMultiSelection: true,
+    );
+  }
 
   const ListSelectionWidget({
     Key? key,
+    required String hintText,
+    required List<SelectionItem<T>> listItems,
+    required bool isMultiSelection,
+    List<SelectionItem<T>>? multiSelectValues,
+    Function(List<SelectionItem<T>>)? onMultiItemsSelected,
+    SelectionItem<T>? selectedValue,
+    Function(SelectionItem<T>)? onSingleItemSelected,
+    Widget? selectedIcon,
+    bool? hideLines,
+    Decoration? decoration,
+    IconStyleData? iconStyle,
+    TextStyleData? textStyle,
+    PaddingData? paddingData,
+    bool? scrollControl,
+    double? maxHeight,
+  }) : super(
+          key: key,
+          hintText: hintText,
+          listItems: listItems,
+          isMultiSelection: isMultiSelection,
+          multiSelectValues: multiSelectValues,
+          onMultiItemsSelected: onMultiItemsSelected,
+          selectedValue: selectedValue,
+          onSingleItemSelected: onSingleItemSelected,
+          selectedIcon: selectedIcon,
+          hideLines: hideLines,
+          decoration: decoration,
+          iconStyle: iconStyle,
+          textStyle: textStyle,
+          paddingData: paddingData,
+          maxHeight: maxHeight,
+        );
+}
+
+class ListSelectionWidgetBase<T> extends StatefulWidget {
+  final String hintText;
+  final List<SelectionItem<T>> listItems;
+  final bool isMultiSelection;
+  final List<SelectionItem<T>>? multiSelectValues;
+  final Function(List<SelectionItem<T>>)? onMultiItemsSelected;
+
+  final SelectionItem<T>? selectedValue;
+  final Function(SelectionItem<T>)? onSingleItemSelected;
+  final Widget? selectedIcon;
+  final bool? hideLines;
+  final Decoration? decoration;
+  final IconStyleData? iconStyle;
+  final TextStyleData? textStyle;
+  final PaddingData? paddingData;
+
+  final double? maxHeight;
+
+  const ListSelectionWidgetBase({
+    super.key,
     required this.listItems,
+    required this.hintText,
+    required this.isMultiSelection,
     this.multiSelectValues = const [],
     this.onMultiItemsSelected,
     this.hideLines,
-    this.itemMargin,
-    this.itemPadding,
-    this.titleStyle,
     this.decoration,
-    this.contentPadding,
-    required this.hintText,
-    this.titleIcon,
-    this.scrollControl,
+    this.iconStyle,
+    this.textStyle,
+    this.paddingData,
     this.maxHeight,
-    this.titlePadding,
-    this.itemTextStyle,
     this.selectedValue,
     this.onSingleItemSelected,
-    required this.isMultiSelection,
     this.selectedIcon,
-    this.collapsedIconColor,
-    this.expandedIconColor,
-    this.selectedIconColor,
-    this.backgroundSelectedIconColor,
-    this.unSelecctedIconColor,
-    this.selectedItemTextStyle,
-  })  : assert(
-          (isMultiSelection && onMultiItemsSelected != null) ||
-              (!isMultiSelection && onSingleItemSelected != null),
-          'Invalid configuration: If isMultiSelection is true, you must provide onMultiItemsSelected. If isMultiSelection is false, you must provide onSingleItemSelected.',
-        ),
-        assert(
-            scrollControl == true
-                ? (maxHeight != null && maxHeight > 30)
-                : true,
-            'You must enter a max height greater than 30 if you want to scroll through the list'),
-        super(key: key);
+  });
 
   @override
-  State<ListSelectionWidget> createState() => _ListSelectionWidgetState();
+  State<ListSelectionWidgetBase<T>> createState() =>
+      _ListSelectionWidgetBaseState<T>();
 }
 
-class _ListSelectionWidgetState extends State<ListSelectionWidget> {
-  late List<SelectionItem> multiSelectValues;
-  late SelectionItem singleSelectValue;
+class _ListSelectionWidgetBaseState<T>
+    extends State<ListSelectionWidgetBase<T>> {
+  late List<SelectionItem<T>> multiSelectValues;
+  late SelectionItem<T>? singleSelectValue;
   final streamController = StreamController<bool>.broadcast();
 
   @override
@@ -101,22 +174,25 @@ class _ListSelectionWidgetState extends State<ListSelectionWidget> {
       },
       child: ListSelectionWidgetDecoration(
         decoration: widget.decoration,
-        paddingContent: widget.contentPadding,
+        paddingContent: widget.paddingData?.contentPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListSelectionWidgetTitleContent(
-              collapsedIconColor: widget.collapsedIconColor,
-              expandedIconColor: widget.expandedIconColor,
+              collapsedIconColor: widget.iconStyle?.collapsedIconColor,
+              expandedIconColor: widget.iconStyle?.expandedIconColor,
               selected: getTextTitle(),
-              titleContentPadding: widget.titlePadding,
-              titleStyle: widget.titleStyle,
-              icon: widget.titleIcon,
+              titleContentPadding: widget.paddingData?.titlePadding,
+              titleStyle: widget.textStyle?.titleStyle,
+              icon: widget.selectedIcon,
             ),
             CrossAnimationWidget(
               stream: streamController,
-              child: SizedBox(
-                height: widget.scrollControl == true ? widget.maxHeight : null,
+              child: Container(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height * 0.1,
+                  maxHeight: widget.maxHeight ?? double.infinity,
+                ),
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   child: Column(
@@ -124,17 +200,14 @@ class _ListSelectionWidgetState extends State<ListSelectionWidget> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(widget.listItems.length, (index) {
                       return ListSelectionWidgetItemContent(
-                        selectedItemTextStyle: widget.selectedItemTextStyle,
-                        backgroundSelectedIconColor:
-                            widget.backgroundSelectedIconColor,
-                        selectedIconColor: widget.selectedIconColor,
-                        unSelecctedIconColor: widget.unSelecctedIconColor,
+                        selectedItemTextStyle:
+                            widget.textStyle?.selectedItemTextStyle,
+                        iconStyle: widget.iconStyle,
+                        paddingData: widget.paddingData,
+                        textStyle: widget.textStyle,
                         isMultiSelection: widget.isMultiSelection,
                         selectedIcon: widget.selectedIcon,
-                        itemTextStyle: widget.itemTextStyle,
                         hideLines: widget.hideLines,
-                        itemMargin: widget.itemMargin,
-                        itemPadding: widget.itemPadding,
                         item: widget.listItems[index],
                         selected: selectedPass(),
                         onTap: () => onTap(widget.listItems[index]),
@@ -154,21 +227,21 @@ class _ListSelectionWidgetState extends State<ListSelectionWidget> {
     if (widget.isMultiSelection == true) {
       return multiSelectValues.isEmpty
           ? widget.hintText
-          : multiSelectValues.map((item) => item.displayValue).join(', ');
+          : multiSelectValues.map((item) => item.label).join(', ');
     } else {
-      return singleSelectValue.displayValue;
+      return singleSelectValue?.label ?? widget.hintText;
     }
   }
 
   dynamic selectedPass() {
     if (widget.isMultiSelection == true) {
-      return multiSelectValues.map((item) => item.value).toList();
+      return multiSelectValues;
     } else {
-      return singleSelectValue.value;
+      return singleSelectValue;
     }
   }
 
-  void onTap(SelectionItem item) {
+  void onTap(SelectionItem<T> item) {
     setState(() {
       if (widget.isMultiSelection == true) {
         toggleMultiItem(item);
@@ -178,17 +251,14 @@ class _ListSelectionWidgetState extends State<ListSelectionWidget> {
     });
   }
 
-  void toggleMultiItem(SelectionItem item) {
+  void toggleMultiItem(SelectionItem<T> item) {
     setState(() {
-      if (multiSelectValues
-          .any((selectedItem) => selectedItem.value == item.value)) {
-        multiSelectValues
-            .removeWhere((selectedItem) => selectedItem.value == item.value);
+      if (multiSelectValues.contains(item)) {
+        multiSelectValues.remove(item);
       } else {
         multiSelectValues.add(item);
       }
-      widget.onMultiItemsSelected!(
-          multiSelectValues.map((item) => item.value).toList());
+      widget.onMultiItemsSelected!(multiSelectValues);
     });
   }
 
@@ -197,37 +267,28 @@ class _ListSelectionWidgetState extends State<ListSelectionWidget> {
       multiSelectValues = [];
     } else {
       multiSelectValues = widget.listItems
-          .where((item) => widget.multiSelectValues!.contains(item.value))
+          .where((item) => widget.multiSelectValues!.contains(item))
           .toList();
     }
   }
 
-  void toggleSingleItem(SelectionItem item) {
-    if (item.value == singleSelectValue.value) {
-      singleSelectValue = SelectionItem(
-        value: null,
-        displayValue: widget.hintText,
-      );
-    } else {
-      singleSelectValue = item;
-      widget.onSingleItemSelected!(
-        item.value,
-      );
-    }
-    setState(() {});
+  void toggleSingleItem(SelectionItem<T> item) {
+    setState(() {
+      if (item != singleSelectValue) {
+        singleSelectValue = item;
+        widget.onSingleItemSelected!(item);
+      }
+    });
   }
 
   void setSingleItem() {
     if (widget.selectedValue != null) {
       singleSelectValue = widget.listItems.firstWhere(
-        (item) => item.value == widget.selectedValue,
+        (item) => item == widget.selectedValue,
         orElse: () => widget.listItems.first,
       );
     } else {
-      singleSelectValue = SelectionItem(
-        value: null,
-        displayValue: widget.hintText,
-      );
+      singleSelectValue = null;
     }
   }
 }

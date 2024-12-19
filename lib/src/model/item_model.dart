@@ -1,10 +1,10 @@
 import 'package:list_selection_widget/list_selection_widget.dart';
 
-class SelectionItem {
-  final dynamic value;
-  final String displayValue;
+class SelectionItem<T> {
+  final T value;
+  final String label;
 
-  SelectionItem({required this.value, required this.displayValue});
+  SelectionItem({required this.value, required this.label});
 }
 
 class IconStyleData {

@@ -21,7 +21,7 @@ class _CrossAnimationWidgetState extends State<CrossAnimationWidget> {
       stream: widget.stream.stream,
       builder: (context, snapshot) {
         return AnimatedCrossFade(
-          duration: const Duration(milliseconds: 250),
+          duration: const Duration(milliseconds: 200),
           crossFadeState: snapshot.data ?? false
               ? CrossFadeState.showSecond
               : CrossFadeState.showFirst,
