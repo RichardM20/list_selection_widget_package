@@ -31,14 +31,14 @@ class Demo extends StatefulWidget {
 
 class _DemoState extends State<Demo> {
   final List<SelectionItem<String>> _listItems = [
-    SelectionItem(value: 'item1', label: 'Item 1'),
-    SelectionItem(value: 'item2', label: 'Item 2'),
-    SelectionItem(value: 'item3', label: 'Item 3'),
-    SelectionItem(value: 'item4', label: 'Item 4'),
+    SelectionItem(value: 'item1', label: 'Flutter'),
+    SelectionItem(value: 'item2', label: 'React Native'),
+    SelectionItem(value: 'item3', label: 'Swift'),
+    SelectionItem(value: 'item4', label: 'Kotlin'),
   ];
 
   SelectionItem<String> _selectedItem =
-      SelectionItem(value: 'item1', label: 'Item 1');
+      SelectionItem(value: 'item1', label: 'Flutter');
   List<SelectionItem<String>> _multiSelectedItems = [];
 
   void _onSingleItemSelected(SelectionItem<String> item) {

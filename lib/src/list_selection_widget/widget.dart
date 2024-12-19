@@ -13,7 +13,6 @@ class ListSelectionWidget<T> extends ListSelectionWidgetBase<T> {
     IconStyleData? iconStyle,
     TextStyleData? textStyle,
     PaddingData? paddingData,
-    bool? scrollControl,
     double? maxHeight,
   }) {
     return ListSelectionWidget<T>(
@@ -28,7 +27,6 @@ class ListSelectionWidget<T> extends ListSelectionWidgetBase<T> {
       iconStyle: iconStyle,
       textStyle: textStyle,
       paddingData: paddingData,
-      scrollControl: scrollControl,
       maxHeight: maxHeight,
       isMultiSelection: false,
     );
@@ -46,7 +44,6 @@ class ListSelectionWidget<T> extends ListSelectionWidgetBase<T> {
     IconStyleData? iconStyle,
     TextStyleData? textStyle,
     PaddingData? paddingData,
-    bool? scrollControl,
     double? maxHeight,
   }) {
     return ListSelectionWidget<T>(
@@ -61,7 +58,6 @@ class ListSelectionWidget<T> extends ListSelectionWidgetBase<T> {
       iconStyle: iconStyle,
       textStyle: textStyle,
       paddingData: paddingData,
-      scrollControl: scrollControl,
       maxHeight: maxHeight,
       isMultiSelection: true,
     );
@@ -82,7 +78,6 @@ class ListSelectionWidget<T> extends ListSelectionWidgetBase<T> {
     IconStyleData? iconStyle,
     TextStyleData? textStyle,
     PaddingData? paddingData,
-    bool? scrollControl,
     double? maxHeight,
   }) : super(
           key: key,
@@ -109,7 +104,6 @@ class ListSelectionWidgetBase<T> extends StatefulWidget {
   final bool isMultiSelection;
   final List<SelectionItem<T>>? multiSelectValues;
   final Function(List<SelectionItem<T>>)? onMultiItemsSelected;
-
   final SelectionItem<T>? selectedValue;
   final Function(SelectionItem<T>)? onSingleItemSelected;
   final Widget? selectedIcon;
@@ -118,7 +112,6 @@ class ListSelectionWidgetBase<T> extends StatefulWidget {
   final IconStyleData? iconStyle;
   final TextStyleData? textStyle;
   final PaddingData? paddingData;
-
   final double? maxHeight;
 
   const ListSelectionWidgetBase({
