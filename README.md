@@ -1,217 +1,189 @@
 # list_selection_widget
-List selection widget is a Flutter package that provides a highly customizable dropdown list to select options with ease
+
+List Selection Widget is a Flutter package that provides a highly customizable dropdown list to select single or multiple options with ease.
+
 ## Preview
+
 ![Untitled video - Made with Clipchamp](https://github.com/RichardM20/list_selection_widget_package/assets/64317751/e50f4967-28de-46b5-af18-0d9254547c10)
 ![image](https://github.com/RichardM20/list_selection_widget_package/assets/64317751/125fb90b-0006-4d0e-8bfb-e596b62dfc63)
 
-
 ## Usage
 
-```dart
-import 'package:list_selection_widget/src/list_selection_widget/package.dart';
-```
-
-The package can be used to select multiple texts or just one, it depends on what you need at the moment.
-
-For example, let's say you need to select multiple texts from a list of data, to do this we will pass a true value to the **isMultiSelection** property
+First, import the package:
 
 ```dart
-
-ListSelectionWidget(
-    isMultiSelection: true, //< -- This property defines whether it will be multiple or single selection
-    hintText: 'Selecciona una o mas opciones',
-     listItems: List.generate(
-       data.length,
-       (index) => SelectionItem(
-         value: data[index]['valor'],
-         displayValue: data[index]['nombre'],
-       ),
-     ),
-     onMultiItemsSelected: (v) { //<- It will always be from the onMultiItemsSelected function
-     
-     //return a list data
-    //output: [data1, data2, data3 ];
-    },
-);
-
+import 'package:list_selection_widget/list_selection_widget.dart';
 ```
-Keep in mind that depending on how isMultiSelection is declared, the function for data assignment will change, since if the wrong one is used an error will be sent.
 
-In this case there are two possibilities with two functions.
-We already saw the first, now we will see what the second is.
-```dart
-ListSelectionWidget(
-    isMultiSelection: false //change,
-    hintText: 'Selecciona una opcion',
-    listItems: List.generate(
-      data.length,
-      (index) => SelectionItem(
-        value: data[index]['valor'],
-        displayValue: data[index]['nombre'],
-      ),
-    ),
-    onSingleItemSelected: (v) { //<-- In this case we declare isMultiSelection to false, so the function we will need will be this
+The package provides two main constructors: `ListSelectionWidget.single` for single selection and `ListSelectionWidget.multi` for multiple selections.
 
-      var yourVariable = v; //return a single data
-      //output: data1
-    },
-);
-
-```
-That's all for the selection mode, now as you may have noticed, a list is passed with a class object indicating which will be the value that will be seen in the widget and which will be the one that will be returned when selecting it.
+### Single Selection
 
 ```dart
-SelectionItem(
-    value: data[index]['valueName'], //Value to select 
-    displayValue: data[index]['name'], // Value to be seen
-),
+ListSelectionWidget<String>.single(
+  hintText: 'Select an option',
+  listItems: [
+    SelectionItem(value: 'flutter', label: 'Flutter'),
+    SelectionItem(value: 'react_native', label: 'React Native'),
+    SelectionItem(value: 'swift', label: 'Swift'),
+  ],
+  selectedValue: null,
+  onSingleItemSelected: (item) {
+    print('Selected: ${item.label}');
+  },
+)
 ```
-An important property to also consider is **scrollControl** and maxHeight.
 
-These allow you to scroll through the list of data, while maxHeight defines the height of the list container.
+### Multiple Selection
+
 ```dart
-ListSelectionWidget(
-    isMultiSelection: false //change,
-    scrollControl: true  // We indicate that you can move,
-    maxHeight: 80        // we define the height of the content, >30,
-    hintText: 'Selecciona una opcion',
-    listItems: List.generate(
-      data.length,
-      (index) => SelectionItem(
-        value: data[index]['valor'],
-        displayValue: data[index]['nombre'],
-      ),
-    ),
-    onSingleItemSelected: (v) {},
-);
-
+ListSelectionWidget<String>.multi(
+  hintText: 'Select multiple options',
+  listItems: [
+    SelectionItem(value: 'flutter', label: 'Flutter'),
+    SelectionItem(value: 'react_native', label: 'React Native'),
+    SelectionItem(value: 'swift', label: 'Swift'),
+  ],
+  multiSelectValues: [],
+  onMultiItemsSelected: (items) {
+    print('Selected: ${items.map((item) => item.label).join(', ')}');
+  },
+)
 ```
 
-The widget is currently very customizable, it will have several options to give it the style you prefer the most.
+## Customization
 
->Interested in collaborating to improve the package are welcome, if you find any errors please let me know so I can fix it as soon as possible
+The widget offers various customization options:
+
+- `decoration`: Customize the overall appearance of the widget
+- `iconStyle`: Customize the icons used in the widget
+- `textStyle`: Customize the text styles
+- `paddingData`: Adjust padding for different parts of the widget
+- `hideLines`: Hide separator lines between items
+- `maxHeight`: Set a maximum height for the dropdown list
+
+Example with customization:
+
+```dart
+ListSelectionWidget<String>.single(
+  hintText: 'Select an option',
+  listItems: [
+    SelectionItem(value: 'flutter', label: 'Flutter'),
+    SelectionItem(value: 'react_native', label: 'React Native'),
+    SelectionItem(value: 'swift', label: 'Swift'),
+  ],
+  selectedValue: null,
+  onSingleItemSelected: (item) {
+    print('Selected: ${item.label}');
+  },
+  hideLines: true,
+  decoration: BoxDecoration(
+    color: Colors.blue,
+    borderRadius: BorderRadius.circular(10),
+  ),
+  iconStyle: IconStyleData(
+    collapsedIconColor: Colors.white,
+    expandedIconColor: Colors.amber,
+  ),
+  textStyle: TextStyleData(
+    titleStyle: TextStyle(color: Colors.white),
+    itemTextStyle: TextStyle(color: Colors.white),
+  ),
+  maxHeight: 200,
+)
+```
 
 ## Full Example
+
+Here's a complete example demonstrating both single and multiple selection widgets:
+
 ```dart
-import 'package:list_selection_widget/src/list_selection_widget/package.dart';
+import 'package:flutter/material.dart';
+import 'package:list_selection_widget/list_selection_widget.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-// ignore: must_be_immutable
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
-  List data = [
-    {
-      "nombre": "FLutter",
-      "valor": 0,
-    },
-    {
-      "nombre": "React Native",
-      "valor": 1,
-    },
-    {
-      "nombre": "Python",
-      "valor": 'python',
-    }
-  ];
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'List Selection Widget',
+      title: 'List Selection Widget Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.blue,
-          title: const Text(
-            "Example",
-            style: TextStyle(
-              color: Colors.white,
+      home: const Demo(title: 'List Selection Widget Demo'),
+    );
+  }
+}
+
+class Demo extends StatefulWidget {
+  const Demo({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<Demo> createState() => _DemoState();
+}
+
+class _DemoState extends State<Demo> {
+  final List<SelectionItem<String>> _listItems = [
+    SelectionItem(value: 'flutter', label: 'Flutter'),
+    SelectionItem(value: 'react_native', label: 'React Native'),
+    SelectionItem(value: 'swift', label: 'Swift'),
+    SelectionItem(value: 'kotlin', label: 'Kotlin'),
+  ];
+
+  SelectionItem<String>? _selectedItem;
+  List<SelectionItem<String>> _multiSelectedItems = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            ListSelectionWidget<String>.single(
+              hintText: 'Select an item',
+              listItems: _listItems,
+              selectedValue: _selectedItem,
+              onSingleItemSelected: (item) {
+                setState(() {
+                  _selectedItem = item;
+                });
+              },
+              hideLines: true,
             ),
-          ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 50),
-              SizedBox(
-                child: ListSelectionWidget(
-                  isMultiSelection: true,
-                  hintText: 'Selecciona una o mas opciones',
-                  listItems: List.generate(
-                    data.length,
-                    (index) => SelectionItem(
-                      value: data[index]['valor'],
-                      displayValue: data[index]['nombre'],
-                    ),
-                  ),
-                  onMultiItemsSelected: (v) {
-                    var yourVariable = v; //return a list data
-                    //output: [data1, data2, data3 ];
-                  },
-                ),
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
-                child: ListSelectionWidget(
-                  isMultiSelection: false,
-                  hideLines: true,
-                  hintText: 'Selecciona una opcion',
-                  backgroundSelectedIconColor: Colors.blue,
-                  selectedItemTextStyle: const TextStyle(color: Colors.red),
-                  selectedIconColor: Colors.red,
-                  unSelecctedIconColor: Colors.white,
-                  listItems: List.generate(
-                    data.length,
-                    (index) => SelectionItem(
-                      value: data[index]['valor'],
-                      displayValue: data[index]['nombre'],
-                    ),
-                  ),
-                  onSingleItemSelected: (v) {
-                    var yourVariable = v; //return a single data
-                    //output: data1
-                  },
-                ),
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
-                child: ListSelectionWidget(
-                  hideLines: true,
-                  scrollControl: true,
-                  maxHeight: 80,
-                  itemTextStyle: const TextStyle(color: Colors.white),
-                  collapsedIconColor: Colors.white,
-                  expandedIconColor: Colors.amber,
-                  selectedIconColor: Colors.amber,
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  titleStyle: const TextStyle(color: Colors.white),
-                  isMultiSelection: false,
-                  hintText: 'Selecciona una opcion',
-                  listItems: List.generate(
-                    data.length,
-                    (index) => SelectionItem(
-                      value: data[index]['valor'],
-                      displayValue: data[index]['nombre'],
-                    ),
-                  ),
-                  onSingleItemSelected: (v) {},
-                ),
-              ),
-            ],
-          ),
+            const SizedBox(height: 30),
+            ListSelectionWidget<String>.multi(
+              hintText: 'Select multiple items',
+              listItems: _listItems,
+              multiSelectValues: _multiSelectedItems,
+              onMultiItemsSelected: (items) {
+                setState(() {
+                  _multiSelectedItems = items;
+                });
+              },
+            ),
+          ],
         ),
       ),
     );
   }
 }
-
 ```
+
+This example demonstrates how to use both single and multiple selection widgets in a Flutter app, along with state management to track selected items.
+
+## Contributing
+
+Contributions to improve the package are welcome. If you find any issues, please report them so they can be addressed as soon as possible.

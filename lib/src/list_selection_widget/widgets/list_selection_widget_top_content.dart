@@ -1,3 +1,4 @@
+import '../../services/provider.dart';
 import '../package.dart';
 
 class ListSelectionWidgetTitleContent extends StatefulWidget {

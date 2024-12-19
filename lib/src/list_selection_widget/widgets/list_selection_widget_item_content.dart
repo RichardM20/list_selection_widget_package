@@ -1,36 +1,32 @@
 import '../package.dart';
+import 'list_selection_widget_items_decoration.dart';
 
-// ignore: must_be_immutable
-class ListSelectionWidgetItemContent extends StatelessWidget {
+class ListSelectionWidgetItemContent<T> extends StatelessWidget {
   final bool? hideLines;
-  final Color? selectedIconColor;
-  final Color? backgroundSelectedIconColor;
-  final Color? unSelecctedIconColor;
-  final EdgeInsetsGeometry? itemMargin;
-  final EdgeInsetsGeometry? itemPadding;
+  final IconStyleData? iconStyle;
+  final TextStyleData? textStyle;
+  final PaddingData? paddingData;
   final void Function()? onTap;
-  final SelectionItem item;
+  final SelectionItem<T> item;
   final dynamic selected;
-  final TextStyle? itemTextStyle;
+
   final Widget? selectedIcon;
   final bool isMultiSelection;
   final TextStyle? selectedItemTextStyle;
+
   const ListSelectionWidgetItemContent({
-    super.key,
-    this.hideLines,
-    this.itemMargin,
-    this.itemPadding,
-    this.onTap,
     required this.item,
-    this.itemTextStyle,
+    required this.isMultiSelection,
+    Key? key,
+    this.hideLines,
+    this.onTap,
     this.selected,
     this.selectedIcon,
-    required this.isMultiSelection,
-    this.selectedIconColor,
-    this.backgroundSelectedIconColor,
-    this.unSelecctedIconColor,
     this.selectedItemTextStyle,
-  });
+    this.iconStyle,
+    this.textStyle,
+    this.paddingData,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,68 +34,77 @@ class ListSelectionWidgetItemContent extends StatelessWidget {
       onTap: onTap,
       child: MultiSelectedWidgetItemDecoration(
         hideLines: hideLines,
-        itemMargin: itemMargin,
-        itemPadding: itemPadding,
+        itemMargin: paddingData?.itemMargin,
+        itemPadding: paddingData?.itemPadding,
         child: Row(
           children: [
-            iconMulti(),
-            styleText(),
+            _buildIcon(),
+            _buildText(),
           ],
         ),
       ),
     );
   }
 
-  iconMulti() {
-    return isMultiSelection == false
-        ? selectedIcon ??
-            _selectedIconContent(
-              selected == item.value,
-            )
-        : _selectedIconContent(selected.contains(item.value));
-  }
+  Widget _buildIcon() {
+    bool isSelected = _isItemSelected();
 
-  styleText() {
-    return isMultiSelection == false
-        ? selectedIcon ??
-            selectedTextContent(
-              selected == item.value,
-            )
-        : selectedTextContent(selected.contains(item.value));
-  }
-
-  Widget selectedTextContent(bool value) {
-    return Expanded(
-      child: Text(
-        item.displayValue,
-        style: itemTextStyle == null
-            ? value == true
-                ? selectedItemTextStyle
-                : const TextStyle(
-                    color: Colors.black,
-                  )
-            : value == true
-                ? selectedItemTextStyle
-                : itemTextStyle,
-      ),
-    );
-  }
-
-  Widget _selectedIconContent(bool value) {
     return Container(
       margin: const EdgeInsets.only(right: 10),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: backgroundSelectedIconColor ?? Colors.grey.shade100,
+        color: isSelected
+            ? (iconStyle?.backgroundSelectedIconColor ?? Colors.blue)
+            : Colors.grey.shade100,
         shape: BoxShape.circle,
       ),
-      child: Icon(
-        Icons.check,
-        color: value
-            ? selectedIconColor ?? Colors.blue
-            : unSelecctedIconColor ?? Colors.grey,
-        size: 15,
+      child: selectedIcon ??
+          Icon(
+            Icons.check,
+            color: isSelected
+                ? (iconStyle?.selectedIconColor ?? Colors.white)
+                : (iconStyle?.unselectedIconColor ?? Colors.grey),
+            size: 20,
+          ),
+    );
+  }
+
+  Widget _buildText() {
+    bool isSelected = _isItemSelected();
+
+    return Expanded(
+      child: Text(
+        item.label,
+        style: _getTextStyle(isSelected),
       ),
     );
+  }
+
+  TextStyle _getTextStyle(bool isSelected) {
+    if (isSelected) {
+      return selectedItemTextStyle ??
+          const TextStyle(
+            fontWeight: FontWeight.w500,
+          );
+    } else {
+      return textStyle?.itemTextStyle ??
+          const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.normal,
+          );
+    }
+  }
+
+  bool _isItemSelected() {
+    if (isMultiSelection) {
+      if (selected != null && selected is List<SelectionItem<T>>) {
+        return (selected as List<SelectionItem<T>>).contains(item);
+      }
+    } else {
+      if (selected != null && selected is SelectionItem<T>) {
+        return selected == item;
+      }
+    }
+    return false;
   }
 }
