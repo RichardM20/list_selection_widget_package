@@ -13,6 +13,9 @@ class IconStyleData {
   final Color? selectedIconColor;
   final Color? backgroundSelectedIconColor;
   final Color? unselectedIconColor;
+  final Widget? tailingIcon;
+  final Widget? selectionCustomIcon;
+  final bool? allowDefaultRotation;
 
   const IconStyleData({
     this.collapsedIconColor,
@@ -20,6 +23,9 @@ class IconStyleData {
     this.selectedIconColor,
     this.backgroundSelectedIconColor,
     this.unselectedIconColor,
+    this.tailingIcon,
+    this.selectionCustomIcon,
+    this.allowDefaultRotation = true,
   });
 }
 
