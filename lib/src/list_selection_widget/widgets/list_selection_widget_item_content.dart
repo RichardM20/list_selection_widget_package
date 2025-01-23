@@ -1,3 +1,5 @@
+import 'package:list_selection_widget/src/list_selection_widget/widgets/icon.dart';
+
 import '../package.dart';
 import 'list_selection_widget_items_decoration.dart';
 
@@ -9,8 +11,6 @@ class ListSelectionWidgetItemContent<T> extends StatelessWidget {
   final void Function()? onTap;
   final SelectionItem<T> item;
   final dynamic selected;
-
-  final Widget? selectedIcon;
   final bool isMultiSelection;
   final TextStyle? selectedItemTextStyle;
 
@@ -21,7 +21,6 @@ class ListSelectionWidgetItemContent<T> extends StatelessWidget {
     this.hideLines,
     this.onTap,
     this.selected,
-    this.selectedIcon,
     this.selectedItemTextStyle,
     this.iconStyle,
     this.textStyle,
@@ -54,18 +53,16 @@ class ListSelectionWidgetItemContent<T> extends StatelessWidget {
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: isSelected
-            ? (iconStyle?.backgroundSelectedIconColor ?? Colors.blue)
+            ? (iconStyle?.backgroundSelectedIconColor ?? Colors.white)
             : Colors.grey.shade100,
         shape: BoxShape.circle,
       ),
-      child: selectedIcon ??
-          Icon(
-            Icons.check,
-            color: isSelected
-                ? (iconStyle?.selectedIconColor ?? Colors.white)
-                : (iconStyle?.unselectedIconColor ?? Colors.grey),
-            size: 20,
-          ),
+      child: IconContent(
+        changed: isSelected,
+        defaultColor: iconStyle?.selectedIconColor,
+        undefaultColor: iconStyle?.unselectedIconColor,
+        icon: iconStyle?.selectionCustomIcon,
+      ),
     );
   }
 

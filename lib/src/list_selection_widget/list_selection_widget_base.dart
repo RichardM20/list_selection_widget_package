@@ -13,7 +13,6 @@ class ListSelectionWidgetBase<T> extends StatefulWidget {
   final Function(List<SelectionItem<T>>)? onMultiItemsSelected;
   final SelectionItem<T>? selectedValue;
   final Function(SelectionItem<T>)? onSingleItemSelected;
-  final Widget? selectedIcon;
   final bool? hideLines;
   final Decoration? decoration;
   final IconStyleData? iconStyle;
@@ -36,7 +35,6 @@ class ListSelectionWidgetBase<T> extends StatefulWidget {
     this.maxHeight,
     this.selectedValue,
     this.onSingleItemSelected,
-    this.selectedIcon,
   });
 
   @override
@@ -79,12 +77,10 @@ class _ListSelectionWidgetBaseState<T>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListSelectionWidgetTitleContent(
-              collapsedIconColor: widget.iconStyle?.collapsedIconColor,
-              expandedIconColor: widget.iconStyle?.expandedIconColor,
               selected: getTextTitle(),
               titleContentPadding: widget.paddingData?.titlePadding,
               titleStyle: widget.textStyle?.titleStyle,
-              icon: widget.selectedIcon,
+              iconStyleData: widget.iconStyle,
             ),
             CrossAnimationWidget(
               stream: streamController,
@@ -106,7 +102,6 @@ class _ListSelectionWidgetBaseState<T>
                         paddingData: widget.paddingData,
                         textStyle: widget.textStyle,
                         isMultiSelection: widget.isMultiSelection,
-                        selectedIcon: widget.selectedIcon,
                         hideLines: widget.hideLines,
                         item: widget.listItems[index],
                         selected: selectedPass(),

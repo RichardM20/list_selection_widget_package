@@ -1,22 +1,20 @@
+import 'package:list_selection_widget/src/list_selection_widget/widgets/icon.dart';
+
 import '../../services/provider.dart';
 import '../package.dart';
 
 class ListSelectionWidgetTitleContent extends StatefulWidget {
   final String selected;
   final EdgeInsets? titleContentPadding;
-  final Widget? icon;
-  final Color? collapsedIconColor;
-  final Color? expandedIconColor;
+  final IconStyleData? iconStyleData;
   final TextStyle? titleStyle;
 
   const ListSelectionWidgetTitleContent({
     super.key,
     required this.selected,
     this.titleContentPadding,
-    this.icon,
+    this.iconStyleData,
     this.titleStyle,
-    this.collapsedIconColor,
-    this.expandedIconColor,
   });
 
   @override
@@ -51,9 +49,9 @@ class _ListSelectionWidgetTitleContentState
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _titleContent(),
+            _titleContent,
             const SizedBox(width: 24),
-            _iconTitleContent(),
+            _iconTitleContent,
           ],
         ),
       ),
@@ -65,7 +63,7 @@ class _ListSelectionWidgetTitleContentState
     vertical: 4,
   );
 
-  Widget _titleContent() {
+  Widget get _titleContent {
     return Expanded(
       child: Text(
         widget.selected,
@@ -74,17 +72,24 @@ class _ListSelectionWidgetTitleContentState
     );
   }
 
-  Widget _iconTitleContent() {
-    return RotationTransition(
-      turns: _animation,
-      child: widget.icon ??
-          Icon(
-            Icons.arrow_forward_ios_rounded,
-            color: isExpanded
-                ? widget.expandedIconColor ?? Colors.blue
-                : widget.collapsedIconColor ?? Colors.grey,
-          ),
+  Widget get _icon {
+    return IconContent(
+      changed: isExpanded,
+      defaultColor: widget.iconStyleData?.collapsedIconColor,
+      icon: widget.iconStyleData?.tailingIcon,
+      undefaultColor: widget.iconStyleData?.expandedIconColor,
     );
+  }
+
+  Widget get _iconTitleContent {
+    if (widget.iconStyleData == null ||
+        widget.iconStyleData!.allowDefaultRotation == true) {
+      return RotationTransition(
+        turns: _animation,
+        child: _icon,
+      );
+    } else if (widget.iconStyleData != null) {}
+    return _icon;
   }
 
   void onTap() {

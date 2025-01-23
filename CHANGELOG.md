@@ -1,3 +1,8 @@
+## 1.0.1
+
+- added icon personalization:
+  - Now it will be possible to integrate a custom icon for both the title and the selection ones.
+
 ## 1.0.0
 
 - added factories
