@@ -1,6 +1,5 @@
-import '../package.dart';
+import 'package:flutter/material.dart';
 
-// ignore: must_be_immutable
 class ListSelectionWidgetDecoration extends StatelessWidget {
   final Widget child;
   final EdgeInsets? paddingContent;

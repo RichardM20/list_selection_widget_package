@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
+
+import '../model/models.dart';
 import 'list_selection_widget_base.dart';
-import 'package.dart';
 
 class ListSelectionWidget<T> extends ListSelectionWidgetBase<T> {
   factory ListSelectionWidget.single({
@@ -14,8 +16,14 @@ class ListSelectionWidget<T> extends ListSelectionWidgetBase<T> {
     TextStyleData? textStyle,
     PaddingData? paddingData,
     double? maxHeight,
+    bool autoCollapsed = false,
+    Duration animationDuration = const Duration(milliseconds: 200),
+    bool initiallyExpanded = false,
+    ValueChanged<bool>? onExpansionChanged,
+    SelectionTitleBuilder<T>? selectedTitleBuilder,
+    SelectionItemBuilder<T>? itemBuilder,
   }) {
-    return ListSelectionWidget<T>(
+    return ListSelectionWidget<T>._(
       key: key,
       hintText: hintText,
       listItems: listItems,
@@ -27,6 +35,12 @@ class ListSelectionWidget<T> extends ListSelectionWidgetBase<T> {
       textStyle: textStyle,
       paddingData: paddingData,
       maxHeight: maxHeight,
+      autoCollapsed: autoCollapsed,
+      animationDuration: animationDuration,
+      initiallyExpanded: initiallyExpanded,
+      onExpansionChanged: onExpansionChanged,
+      selectedTitleBuilder: selectedTitleBuilder,
+      itemBuilder: itemBuilder,
       isMultiSelection: false,
     );
   }
@@ -43,8 +57,14 @@ class ListSelectionWidget<T> extends ListSelectionWidgetBase<T> {
     TextStyleData? textStyle,
     PaddingData? paddingData,
     double? maxHeight,
+    bool autoCollapsed = false,
+    Duration animationDuration = const Duration(milliseconds: 200),
+    bool initiallyExpanded = false,
+    ValueChanged<bool>? onExpansionChanged,
+    SelectionTitleBuilder<T>? selectedTitleBuilder,
+    SelectionItemBuilder<T>? itemBuilder,
   }) {
-    return ListSelectionWidget<T>(
+    return ListSelectionWidget<T>._(
       key: key,
       hintText: hintText,
       listItems: listItems,
@@ -56,10 +76,21 @@ class ListSelectionWidget<T> extends ListSelectionWidgetBase<T> {
       textStyle: textStyle,
       paddingData: paddingData,
       maxHeight: maxHeight,
+      autoCollapsed: autoCollapsed,
+      animationDuration: animationDuration,
+      initiallyExpanded: initiallyExpanded,
+      onExpansionChanged: onExpansionChanged,
+      selectedTitleBuilder: selectedTitleBuilder,
+      itemBuilder: itemBuilder,
       isMultiSelection: true,
     );
   }
 
+  @Deprecated(
+    'Use ListSelectionWidget.single or ListSelectionWidget.multi instead. '
+    'The generic constructor allows invalid selection configurations and will '
+    'be removed in a future major version.',
+  )
   const ListSelectionWidget({
     Key? key,
     required String hintText,
@@ -75,6 +106,12 @@ class ListSelectionWidget<T> extends ListSelectionWidgetBase<T> {
     TextStyleData? textStyle,
     PaddingData? paddingData,
     double? maxHeight,
+    bool autoCollapsed = false,
+    Duration animationDuration = const Duration(milliseconds: 200),
+    bool initiallyExpanded = false,
+    ValueChanged<bool>? onExpansionChanged,
+    SelectionTitleBuilder<T>? selectedTitleBuilder,
+    SelectionItemBuilder<T>? itemBuilder,
   }) : super(
           key: key,
           hintText: hintText,
@@ -90,5 +127,55 @@ class ListSelectionWidget<T> extends ListSelectionWidgetBase<T> {
           textStyle: textStyle,
           paddingData: paddingData,
           maxHeight: maxHeight,
+          autoCollapsed: autoCollapsed,
+          animationDuration: animationDuration,
+          initiallyExpanded: initiallyExpanded,
+          onExpansionChanged: onExpansionChanged,
+          selectedTitleBuilder: selectedTitleBuilder,
+          itemBuilder: itemBuilder,
+        );
+
+  const ListSelectionWidget._({
+    Key? key,
+    required String hintText,
+    required List<SelectionItem<T>> listItems,
+    required bool isMultiSelection,
+    List<SelectionItem<T>>? multiSelectValues,
+    Function(List<SelectionItem<T>>)? onMultiItemsSelected,
+    SelectionItem<T>? selectedValue,
+    Function(SelectionItem<T>)? onSingleItemSelected,
+    bool? hideLines,
+    Decoration? decoration,
+    IconStyleData? iconStyle,
+    TextStyleData? textStyle,
+    PaddingData? paddingData,
+    double? maxHeight,
+    bool autoCollapsed = false,
+    Duration animationDuration = const Duration(milliseconds: 200),
+    bool initiallyExpanded = false,
+    ValueChanged<bool>? onExpansionChanged,
+    SelectionTitleBuilder<T>? selectedTitleBuilder,
+    SelectionItemBuilder<T>? itemBuilder,
+  }) : super(
+          key: key,
+          hintText: hintText,
+          listItems: listItems,
+          isMultiSelection: isMultiSelection,
+          multiSelectValues: multiSelectValues,
+          onMultiItemsSelected: onMultiItemsSelected,
+          selectedValue: selectedValue,
+          onSingleItemSelected: onSingleItemSelected,
+          hideLines: hideLines,
+          decoration: decoration,
+          iconStyle: iconStyle,
+          textStyle: textStyle,
+          paddingData: paddingData,
+          maxHeight: maxHeight,
+          autoCollapsed: autoCollapsed,
+          animationDuration: animationDuration,
+          initiallyExpanded: initiallyExpanded,
+          onExpansionChanged: onExpansionChanged,
+          selectedTitleBuilder: selectedTitleBuilder,
+          itemBuilder: itemBuilder,
         );
 }

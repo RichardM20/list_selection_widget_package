@@ -1,6 +1,6 @@
 name: list_selection_widget
 description: "List selection widget is a Flutter package that provides a highly customizable dropdown list to select options with ease"
-version: 1.0.1
+version: 1.1.0
 homepage: https://github.com/RichardM20
 repository: https://github.com/RichardM20/list_selection_widget_package
  
@@ -15,7 +15,7 @@ platforms:
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
-  flutter: ">=1.17.0"
+  flutter: ">=3.16.0"
 
 dependencies:
   flutter:
@@ -25,7 +25,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^4.0.0
  
  
  
