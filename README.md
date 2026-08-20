@@ -17,6 +17,11 @@ import 'package:list_selection_widget/list_selection_widget.dart';
 
 The package provides two main constructors: `ListSelectionWidget.single` for single selection and `ListSelectionWidget.multi` for multiple selections.
 
+> The generic `ListSelectionWidget(...)` constructor is deprecated because it can
+> combine single-selection and multi-selection parameters in invalid ways. Use
+> `ListSelectionWidget.single(...)` or `ListSelectionWidget.multi(...)` for new
+> code.
+
 ### Single Selection
 
 ```dart
@@ -31,6 +36,8 @@ ListSelectionWidget<String>.single(
   onSingleItemSelected: (item) {
     print('Selected: ${item.label}');
   },
+  autoCollapsed: true,
+  animationDuration: const Duration(milliseconds: 120),
 )
 ```
 
@@ -61,6 +68,56 @@ The widget offers various customization options:
 - `paddingData`: Adjust padding for different parts of the widget
 - `hideLines`: Hide separator lines between items
 - `maxHeight`: Set a maximum height for the dropdown list
+- `autoCollapsed`: Collapse the list automatically after an item is selected
+- `animationDuration`: Customize the list expansion and title icon rotation duration
+- `initiallyExpanded`: Show the list opened on first build
+- `onExpansionChanged`: Listen when the list opens or closes
+- `selectedTitleBuilder`: Customize the title text shown when items are selected
+- `itemBuilder`: Customize each item row while keeping the built-in selection behavior
+- `allowDefaultRotation`: Disable the built-in title icon rotation when using a custom animated icon
+
+Migration note: use `IconStyleData.trailingIcon` for the title icon. The old
+misspelled `tailingIcon` parameter was removed.
+
+### Customization Precedence
+
+- `selectedTitleBuilder` replaces the default selected title text. When it is
+  provided, the widget does not use `hintText` or the comma-separated selected
+  labels for the title.
+- `itemBuilder` replaces the default item row content. When it is provided,
+  `iconStyle.selectionCustomIcon`, `iconStyle.selectedIconColor`,
+  `iconStyle.unselectedIconColor`, `iconStyle.backgroundSelectedIconColor`,
+  `textStyle.itemTextStyle`, and `textStyle.selectedItemTextStyle` no longer
+  affect the item row content.
+- `itemBuilder` does not replace the row wrapper. The package still handles item
+  taps, `paddingData.itemPadding`, `paddingData.itemMargin`, and `hideLines`.
+- `decoration`, `paddingData.contentPadding`, `paddingData.titlePadding`,
+  `maxHeight`, `animationDuration`, and title icon options still apply when
+  `itemBuilder` is used.
+
+### Custom Title Icon Rotation
+
+By default, the title icon rotates when the list expands or collapses. Set
+`allowDefaultRotation` to `false` when you want to keep your custom
+`trailingIcon` static and prevent the package from rotating it.
+
+```dart
+ListSelectionWidget<String>.single(
+  hintText: 'Select an option',
+  listItems: [
+    SelectionItem(value: 'flutter', label: 'Flutter'),
+    SelectionItem(value: 'react_native', label: 'React Native'),
+  ],
+  selectedValue: null,
+  onSingleItemSelected: (item) {
+    print('Selected: ${item.label}');
+  },
+  iconStyle: IconStyleData(
+    trailingIcon: const Icon(Icons.more_horiz),
+    allowDefaultRotation: false,
+  ),
+)
+```
 
 Example with customization:
 
@@ -90,6 +147,73 @@ ListSelectionWidget<String>.single(
     itemTextStyle: TextStyle(color: Colors.white),
   ),
   maxHeight: 200,
+  autoCollapsed: true,
+  animationDuration: const Duration(milliseconds: 120),
+)
+```
+
+### Custom Selected Title
+
+```dart
+ListSelectionWidget<String>.multi(
+  hintText: 'Select options',
+  listItems: items,
+  multiSelectValues: selectedItems,
+  onMultiItemsSelected: (items) {
+    setState(() {
+      selectedItems = items;
+    });
+  },
+  selectedTitleBuilder: (items) {
+    if (items.isEmpty) return 'Select options';
+    return '${items.length} selected';
+  },
+)
+```
+
+### Custom Item Row
+
+```dart
+ListSelectionWidget<String>.single(
+  hintText: 'Select an option',
+  listItems: items,
+  selectedValue: selectedItem,
+  onSingleItemSelected: (item) {
+    setState(() {
+      selectedItem = item;
+    });
+  },
+  itemBuilder: (context, item, isSelected) {
+    return Row(
+      children: [
+        Icon(
+          isSelected ? Icons.check_circle : Icons.circle_outlined,
+          size: 18,
+        ),
+        const SizedBox(width: 8),
+        Expanded(child: Text(item.label)),
+      ],
+    );
+  },
+)
+```
+
+### Expansion State
+
+```dart
+ListSelectionWidget<String>.multi(
+  hintText: 'Select options',
+  listItems: items,
+  multiSelectValues: selectedItems,
+  onMultiItemsSelected: (items) {
+    setState(() {
+      selectedItems = items;
+    });
+  },
+  initiallyExpanded: true,
+  onExpansionChanged: (isExpanded) {
+    print('Expanded: $isExpanded');
+  },
 )
 ```
 
