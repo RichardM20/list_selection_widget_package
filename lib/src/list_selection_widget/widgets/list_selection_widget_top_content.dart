@@ -1,50 +1,34 @@
-import 'package:list_selection_widget/src/list_selection_widget/widgets/icon.dart';
+import 'package:flutter/material.dart';
 
-import '../../services/provider.dart';
-import '../package.dart';
+import '../../model/models.dart';
+import 'icon.dart';
 
-class ListSelectionWidgetTitleContent extends StatefulWidget {
+class ListSelectionWidgetTitleContent extends StatelessWidget {
   final String selected;
   final EdgeInsets? titleContentPadding;
   final IconStyleData? iconStyleData;
   final TextStyle? titleStyle;
+  final bool isExpanded;
+  final Duration animationDuration;
+  final VoidCallback onTap;
 
   const ListSelectionWidgetTitleContent({
     super.key,
     required this.selected,
+    required this.isExpanded,
+    required this.animationDuration,
+    required this.onTap,
     this.titleContentPadding,
     this.iconStyleData,
     this.titleStyle,
   });
 
   @override
-  State<ListSelectionWidgetTitleContent> createState() =>
-      _ListSelectionWidgetTitleContentState();
-}
-
-class _ListSelectionWidgetTitleContentState
-    extends State<ListSelectionWidgetTitleContent>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-  bool isExpanded = false;
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 250),
-    );
-
-    _animation = Tween<double>(begin: 0, end: 0.25).animate(_controller);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: widget.titleContentPadding ?? defaulPadding,
+        padding: titleContentPadding ?? defaultPadding,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -58,16 +42,16 @@ class _ListSelectionWidgetTitleContentState
     );
   }
 
-  EdgeInsets defaulPadding = const EdgeInsets.symmetric(
-    horizontal: 4,
-    vertical: 4,
-  );
+  EdgeInsets get defaultPadding => const EdgeInsets.symmetric(
+        horizontal: 4,
+        vertical: 4,
+      );
 
   Widget get _titleContent {
     return Expanded(
       child: Text(
-        widget.selected,
-        style: widget.titleStyle ?? const TextStyle(color: Colors.black),
+        selected,
+        style: titleStyle ?? const TextStyle(color: Colors.black),
       ),
     );
   }
@@ -75,36 +59,20 @@ class _ListSelectionWidgetTitleContentState
   Widget get _icon {
     return IconContent(
       changed: isExpanded,
-      defaultColor: widget.iconStyleData?.collapsedIconColor,
-      icon: widget.iconStyleData?.tailingIcon,
-      undefaultColor: widget.iconStyleData?.expandedIconColor,
+      defaultColor: iconStyleData?.collapsedIconColor,
+      icon: iconStyleData?.trailingIcon,
+      undefaultColor: iconStyleData?.expandedIconColor,
     );
   }
 
   Widget get _iconTitleContent {
-    if (widget.iconStyleData == null ||
-        widget.iconStyleData!.allowDefaultRotation == true) {
-      return RotationTransition(
-        turns: _animation,
+    if (iconStyleData == null || iconStyleData!.allowDefaultRotation == true) {
+      return AnimatedRotation(
+        turns: isExpanded ? 0.25 : 0,
+        duration: animationDuration,
         child: _icon,
       );
-    } else if (widget.iconStyleData != null) {}
-    return _icon;
-  }
-
-  void onTap() {
-    if (isExpanded == true) {
-      setState(() {
-        _controller.reverse();
-        isExpanded = false;
-        Provider.of(context)!.toggleExpansion(false);
-      });
-    } else {
-      setState(() {
-        _controller.forward();
-        isExpanded = true;
-        Provider.of(context)!.toggleExpansion(true);
-      });
     }
+    return _icon;
   }
 }

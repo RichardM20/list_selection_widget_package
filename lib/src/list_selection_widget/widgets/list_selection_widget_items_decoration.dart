@@ -1,4 +1,4 @@
-import '../package.dart';
+import 'package:flutter/material.dart';
 
 class MultiSelectedWidgetItemDecoration extends StatelessWidget {
   final bool? hideLines;

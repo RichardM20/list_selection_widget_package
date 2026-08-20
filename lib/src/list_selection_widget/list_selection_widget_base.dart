@@ -1,5 +1,6 @@
-import '../services/provider.dart';
-import 'package.dart';
+import 'package:flutter/material.dart';
+
+import '../model/models.dart';
 import 'widgets/cross_animation_widget.dart';
 import 'widgets/list_selection_widget_decoration.dart';
 import 'widgets/list_selection_widget_item_content.dart';
@@ -19,6 +20,12 @@ class ListSelectionWidgetBase<T> extends StatefulWidget {
   final TextStyleData? textStyle;
   final PaddingData? paddingData;
   final double? maxHeight;
+  final bool autoCollapsed;
+  final Duration animationDuration;
+  final bool initiallyExpanded;
+  final ValueChanged<bool>? onExpansionChanged;
+  final SelectionTitleBuilder<T>? selectedTitleBuilder;
+  final SelectionItemBuilder<T>? itemBuilder;
 
   const ListSelectionWidgetBase({
     super.key,
@@ -35,6 +42,12 @@ class ListSelectionWidgetBase<T> extends StatefulWidget {
     this.maxHeight,
     this.selectedValue,
     this.onSingleItemSelected,
+    this.autoCollapsed = false,
+    this.animationDuration = const Duration(milliseconds: 200),
+    this.initiallyExpanded = false,
+    this.onExpansionChanged,
+    this.selectedTitleBuilder,
+    this.itemBuilder,
   });
 
   @override
@@ -44,58 +57,61 @@ class ListSelectionWidgetBase<T> extends StatefulWidget {
 
 class _ListSelectionWidgetBaseState<T>
     extends State<ListSelectionWidgetBase<T>> {
-  late List<SelectionItem<T>> multiSelectValues;
-  late SelectionItem<T>? singleSelectValue;
-  final streamController = StreamController<bool>.broadcast();
+  List<SelectionItem<T>> multiSelectValues = [];
+  SelectionItem<T>? singleSelectValue;
+  bool isExpanded = false;
 
   @override
   void initState() {
     super.initState();
-    if (widget.isMultiSelection == true) {
-      setMultiItems();
-    } else {
-      setSingleItem();
+    isExpanded = widget.initiallyExpanded;
+    syncSelectedItems();
+  }
+
+  @override
+  void didUpdateWidget(covariant ListSelectionWidgetBase<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isMultiSelection != widget.isMultiSelection ||
+        oldWidget.listItems != widget.listItems ||
+        oldWidget.selectedValue != widget.selectedValue ||
+        oldWidget.multiSelectValues != widget.multiSelectValues) {
+      syncSelectedItems();
     }
   }
 
   @override
-  void dispose() {
-    streamController.close();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Provider(
-      toggleExpansion: (val) {
-        streamController.add(val);
-      },
-      child: ListSelectionWidgetDecoration(
-        decoration: widget.decoration,
-        paddingContent: widget.paddingData?.contentPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ListSelectionWidgetTitleContent(
-              selected: getTextTitle(),
-              titleContentPadding: widget.paddingData?.titlePadding,
-              titleStyle: widget.textStyle?.titleStyle,
-              iconStyleData: widget.iconStyle,
-            ),
-            CrossAnimationWidget(
-              stream: streamController,
-              child: Container(
-                constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height * 0.1,
-                  maxHeight: widget.maxHeight ?? double.infinity,
-                ),
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(widget.listItems.length, (index) {
-                      return ListSelectionWidgetItemContent(
+    return ListSelectionWidgetDecoration(
+      decoration: widget.decoration,
+      paddingContent: widget.paddingData?.contentPadding,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListSelectionWidgetTitleContent(
+            selected: getTextTitle(),
+            titleContentPadding: widget.paddingData?.titlePadding,
+            titleStyle: widget.textStyle?.titleStyle,
+            iconStyleData: widget.iconStyle,
+            isExpanded: isExpanded,
+            animationDuration: widget.animationDuration,
+            onTap: toggleExpansion,
+          ),
+          CrossAnimationWidget(
+            isExpanded: isExpanded,
+            duration: widget.animationDuration,
+            child: Container(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height * 0.1,
+                maxHeight: widget.maxHeight ?? double.infinity,
+              ),
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    for (final item in widget.listItems)
+                      ListSelectionWidgetItemContent(
                         selectedItemTextStyle:
                             widget.textStyle?.selectedItemTextStyle,
                         iconStyle: widget.iconStyle,
@@ -103,87 +119,130 @@ class _ListSelectionWidgetBaseState<T>
                         textStyle: widget.textStyle,
                         isMultiSelection: widget.isMultiSelection,
                         hideLines: widget.hideLines,
-                        item: widget.listItems[index],
-                        selected: selectedPass(),
-                        onTap: () => onTap(widget.listItems[index]),
-                      );
-                    }),
-                  ),
+                        item: item,
+                        selectedItem: singleSelectValue,
+                        selectedItems: multiSelectValues,
+                        itemBuilder: widget.itemBuilder,
+                        onTap: () => onTap(item),
+                      ),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
+  void syncSelectedItems() {
+    if (widget.isMultiSelection == true) {
+      setMultiItems();
+      singleSelectValue = null;
+    } else {
+      multiSelectValues = [];
+      setSingleItem();
+    }
+  }
+
   String getTextTitle() {
+    final titleBuilder = widget.selectedTitleBuilder;
+    if (titleBuilder != null) {
+      return titleBuilder(selectedItems);
+    }
+
     if (widget.isMultiSelection == true) {
       return multiSelectValues.isEmpty
           ? widget.hintText
           : multiSelectValues.map((item) => item.label).join(', ');
-    } else {
-      return singleSelectValue?.label ?? widget.hintText;
     }
+    return singleSelectValue?.label ?? widget.hintText;
   }
 
-  dynamic selectedPass() {
+  List<SelectionItem<T>> get selectedItems {
     if (widget.isMultiSelection == true) {
-      return multiSelectValues;
-    } else {
-      return singleSelectValue;
+      return List.unmodifiable(multiSelectValues);
     }
+
+    final selectedValue = singleSelectValue;
+    return selectedValue == null ? <SelectionItem<T>>[] : [selectedValue];
   }
 
   void onTap(SelectionItem<T> item) {
-    setState(() {
-      if (widget.isMultiSelection == true) {
-        toggleMultiItem(item);
-      } else {
-        toggleSingleItem(item);
-      }
-    });
+    if (widget.isMultiSelection == true) {
+      toggleMultiItem(item);
+    } else {
+      toggleSingleItem(item);
+    }
   }
 
   void toggleMultiItem(SelectionItem<T> item) {
     setState(() {
-      if (multiSelectValues.contains(item)) {
-        multiSelectValues.remove(item);
+      if (multiSelectValues.any((value) => _isSameItem(value, item))) {
+        multiSelectValues.removeWhere((value) => _isSameItem(value, item));
       } else {
         multiSelectValues.add(item);
       }
-      widget.onMultiItemsSelected!(multiSelectValues);
     });
+    widget.onMultiItemsSelected?.call(List.unmodifiable(multiSelectValues));
+    collapseIfNeeded();
   }
 
   void setMultiItems() {
-    if (widget.multiSelectValues!.isEmpty) {
-      multiSelectValues = [];
-    } else {
-      multiSelectValues = widget.listItems
-          .where((item) => widget.multiSelectValues!.contains(item))
-          .toList();
-    }
+    final selectedValues = widget.multiSelectValues ?? [];
+    multiSelectValues = widget.listItems
+        .where(
+          (item) =>
+              selectedValues.any((selected) => _isSameItem(item, selected)),
+        )
+        .toList();
   }
 
   void toggleSingleItem(SelectionItem<T> item) {
+    if (_isSameItem(item, singleSelectValue)) {
+      return;
+    }
+
     setState(() {
-      if (item != singleSelectValue) {
-        singleSelectValue = item;
-        widget.onSingleItemSelected!(item);
-      }
+      singleSelectValue = item;
     });
+    widget.onSingleItemSelected?.call(item);
+    collapseIfNeeded();
   }
 
   void setSingleItem() {
-    if (widget.selectedValue != null) {
-      singleSelectValue = widget.listItems.firstWhere(
-        (item) => item == widget.selectedValue,
-        orElse: () => widget.listItems.first,
-      );
-    } else {
+    final selectedValue = widget.selectedValue;
+    if (selectedValue == null) {
       singleSelectValue = null;
+      return;
     }
+
+    singleSelectValue = widget.listItems.firstWhere(
+      (item) => _isSameItem(item, selectedValue),
+      orElse: () => selectedValue,
+    );
+  }
+
+  void collapseIfNeeded() {
+    if (!widget.autoCollapsed || !isExpanded) {
+      return;
+    }
+
+    setState(() {
+      isExpanded = false;
+    });
+    widget.onExpansionChanged?.call(false);
+  }
+
+  void toggleExpansion() {
+    final nextValue = !isExpanded;
+    setState(() {
+      isExpanded = nextValue;
+    });
+    widget.onExpansionChanged?.call(nextValue);
+  }
+
+  bool _isSameItem(SelectionItem<T>? a, SelectionItem<T>? b) {
+    return a?.value == b?.value;
   }
 }

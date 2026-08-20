@@ -1,10 +1,20 @@
-import 'package:list_selection_widget/list_selection_widget.dart';
+import 'package:flutter/material.dart';
+
+typedef SelectionTitleBuilder<T> = String Function(
+  List<SelectionItem<T>> selectedItems,
+);
+
+typedef SelectionItemBuilder<T> = Widget Function(
+  BuildContext context,
+  SelectionItem<T> item,
+  bool isSelected,
+);
 
 class SelectionItem<T> {
   final T value;
   final String label;
 
-  SelectionItem({required this.value, required this.label});
+  const SelectionItem({required this.value, required this.label});
 }
 
 class IconStyleData {
@@ -13,7 +23,7 @@ class IconStyleData {
   final Color? selectedIconColor;
   final Color? backgroundSelectedIconColor;
   final Color? unselectedIconColor;
-  final Widget? tailingIcon;
+  final Widget? trailingIcon;
   final Widget? selectionCustomIcon;
   final bool? allowDefaultRotation;
 
@@ -23,7 +33,7 @@ class IconStyleData {
     this.selectedIconColor,
     this.backgroundSelectedIconColor,
     this.unselectedIconColor,
-    this.tailingIcon,
+    this.trailingIcon,
     this.selectionCustomIcon,
     this.allowDefaultRotation = true,
   });
