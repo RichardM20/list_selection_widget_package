@@ -41,3 +41,14 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Platform directories (generated)
+/ios/
+/android/
+/windows/
+/linux/
+/macos/
+/web/
+
+# Lock file (not needed for example apps)
+pubspec.lock
